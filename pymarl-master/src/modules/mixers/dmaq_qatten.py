@@ -20,7 +20,8 @@ class DMAQ_QattenMixer(nn.Module):
 
         self.attention_weight = Qatten_Weight(args)
         self.si_weight = DMAQ_SI_Weight(args)
-
+        self.var = DMAQ_SI_Weight(args)
+        
     def calc_v(self, agent_qs):
         agent_qs = agent_qs.view(-1, self.n_agents)
         v_tot = th.sum(agent_qs, dim=-1)
@@ -35,13 +36,22 @@ class DMAQ_QattenMixer(nn.Module):
         adv_q = (agent_qs - max_q_i).view(-1, self.n_agents).detach()
 
         adv_w_final = self.si_weight(states, actions)
-        adv_w_final = adv_w_final.view(-1, self.n_agents)
+        var = self.var(states, actions)
+
+        # sampling from normal dist 
+        std = th.exp(0.5 * var)
+        eps = th.randn_like(std)
+        # Reparameterization trick
+        sampled_latent = adv_w_final + eps * std
+      
+        adv_w_final = sampled_latent.view(-1, self.n_agents)
 
         if self.args.is_minus_one:
             adv_tot = th.sum(adv_q * (adv_w_final - 1.), dim=1)
         else:
             adv_tot = th.sum(adv_q * adv_w_final, dim=1)
-        return adv_tot
+        var = th.sum(var, dim=-1)
+        return adv_tot/var
 
     def calc(self, agent_qs, states, actions=None, max_q_i=None, is_v=False):
         if is_v:
