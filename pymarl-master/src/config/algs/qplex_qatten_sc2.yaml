@@ -9,7 +9,8 @@ epsilon_anneal_time: 50000
 runner: "episode"
 
 buffer_size: 5000
-
+wandb_project: "diversity5"
+wandb_group: "3s_vs_3z_uncertanty_weighted"
 # update the target network every {} episodes
 target_update_interval: 200
 
