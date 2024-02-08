@@ -85,7 +85,7 @@ class DMAQ_SI_Weight_dropout(nn.Module):
         super(DMAQ_SI_Weight, self).__init__()
 
         self.args = args
-        self.n_agents = args.n_agents
+        self.n_agents = 1
         self.n_actions = args.n_actions
         self.state_dim = int(np.prod(args.state_shape))
         self.action_dim = args.n_agents * self.n_actions
