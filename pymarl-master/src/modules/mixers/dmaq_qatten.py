@@ -4,7 +4,7 @@ import torch.nn.functional as F
 import numpy as np
 import pickle as pkl
 from .dmaq_qatten_weight import Qatten_Weight
-from .dmaq_si_weight import DMAQ_SI_Weight
+from .dmaq_si_weight import DMAQ_SI_Weight, DMAQ_SI_Weight_dropout
 
 
 class DMAQ_QattenMixer(nn.Module):
@@ -21,7 +21,7 @@ class DMAQ_QattenMixer(nn.Module):
         self.attention_weight = Qatten_Weight(args)
         self.si_weight = DMAQ_SI_Weight(args)
         self.var = DMAQ_SI_Weight(args)
-        
+        self.dropout_weights = [DMAQ_SI_Weight_dropout(args) for i in range(self.n_agents)]
     def calc_v(self, agent_qs):
         agent_qs = agent_qs.view(-1, self.n_agents)
         v_tot = th.sum(agent_qs, dim=-1)
