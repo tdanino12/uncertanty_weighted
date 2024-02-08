@@ -92,7 +92,7 @@ class DMAQ_SI_Weight_dropout(nn.Module):
         self.state_action_dim = self.state_dim + self.action_dim
 
         self.num_kernel = 2
-
+        self.num_samples = 23
         self.key_extractors = nn.ModuleList()
         self.agents_extractors = nn.ModuleList()
         self.action_extractors = nn.ModuleList()
@@ -110,7 +110,7 @@ class DMAQ_SI_Weight_dropout(nn.Module):
 
         all_predictions = []
 
-        for _ in range(num_samples):
+        for _ in range(self.num_samples):
             all_head_key = [F.dropout(k_ext(states), p=self.dropout_prob, training=self.training) for k_ext in self.key_extractors]
 
             # Apply dropout to agents_extractors during training
