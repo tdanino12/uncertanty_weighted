@@ -36,9 +36,9 @@ class DMAQ_QattenMixer(nn.Module):
         adv_q = (agent_qs - max_q_i).view(-1, self.n_agents).detach()
 
         adv_w_final = self.si_weight(states, actions)
-        drop_weights = th.zeros()
+        drop_weights = th.zeros(adv_q.shape[0],self.n_agents)
         for i in range(self.n_agents):
-            drop_weights[:,i], drop_variance[:i] = self.dropout_weights(states, actions) 
+            drop_weights[:,i], drop_variance[:i] = self.dropout_weights[i](states, actions) 
 
         adv_w_final = drop_weights/drop_variance
         '''
