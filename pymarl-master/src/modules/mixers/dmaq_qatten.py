@@ -36,9 +36,12 @@ class DMAQ_QattenMixer(nn.Module):
         adv_q = (agent_qs - max_q_i).view(-1, self.n_agents).detach()
 
         adv_w_final = self.si_weight(states, actions)
+        drop_weights = th.zeros()
         for i in range(self.n_agents):
-            drop_weights = self.dropout_weights(states, actions) 
-        
+            drop_weights[:,i], drop_variance[:i] = self.dropout_weights(states, actions) 
+
+        adv_w_final = drop_weights/drop_variance
+        '''
         var = self.var(states, actions)
 
         # sampling from normal dist 
@@ -48,7 +51,8 @@ class DMAQ_QattenMixer(nn.Module):
         sampled_latent = adv_w_final + eps * std
       
         adv_w_final = sampled_latent.view(-1, self.n_agents)
-
+        '''
+        
         if self.args.is_minus_one:
             adv_tot = th.sum(adv_q * (adv_w_final - 1.), dim=1)
         else:
