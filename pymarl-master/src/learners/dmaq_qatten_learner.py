@@ -96,7 +96,7 @@ class DMAQ_qattenLearner:
             target_max_qvals = target_mac_out.max(dim=3)[0]
             target_next_actions = cur_max_actions.detach()
 
-            cur_max_actions_onehot = th.zeros(cur_max_actions.squeeze(3).shape + (self.n_actions,)).cuda()
+            cur_max_actions_onehot = th.zeros(cur_max_actions.squeeze(3).shape + (self.n_actions,))
             cur_max_actions_onehot = cur_max_actions_onehot.scatter_(3, cur_max_actions, 1)
         else:
             # Calculate the Q-Values necessary for the target
